@@ -1,9 +1,10 @@
-exports.hello = require("./handshake");
-exports.disconnect = require("./disconnect");
+exports.createRoom = require("./event");
 exports.createRoom = require("./createRoom");
-exports.roomListSearch = require("./roomListSearch");
+exports.disconnect = require("./disconnect");
+exports.hello = require("./handshake");
 exports.InviteUser = require("./InviteUser");
+exports.joinRoomRequest = require("./joinRoomRequest");
 exports.leaveRoom = require("./leaveRoom");
 exports.messageSend = require("./messageSend");
 exports.messageLoad = require("./messageLoad");
-exports.joinRoomRequest = require("./joinRoomRequest");
+exports.roomListSearch = require("./roomListSearch");
