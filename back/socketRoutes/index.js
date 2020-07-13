@@ -1,9 +1,9 @@
-var express = require("express");
-var router = express.Router();
-
-/* GET home page. */
-router.get("/", function(req, res) {
-  res.render("index", { title: "Socket routes" });
-});
-
-module.exports = router;
+exports.hello = require("./handshake");
+exports.disconnect = require("./disconnect");
+exports.createRoom = require("./createRoom");
+exports.roomListSearch = require("./roomListSearch");
+exports.InviteUser = require("./InviteUser");
+exports.leaveRoom = require("./leaveRoom");
+exports.messageSend = require("./messageSend");
+exports.messageLoad = require("./messageLoad");
+exports.joinRoomRequest = require("./joinRoomRequest");
