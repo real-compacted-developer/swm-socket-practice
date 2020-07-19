@@ -1,61 +1,39 @@
-const createError = require("http-errors");
 const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const logger = require("morgan");
-const io = require("socket.io")();
-
-const indexRouter = require("./routes");
-const socketRouter = require("./socketRoutes");
-
 const app = express();
-app.io = io;
-
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use("/", indexRouter);
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
-io.use(socketRouter.handshake);
-io.on("connection",(socket)=>{
-  socketRouter.functions.TokenRefreshEmmit(socket);
-  socketRouter.functions.SetSocketId(socket).then((user)=>{
-    socketRouter.functions.JoinRooms(user,socket);
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
+//const fs = require("fs");
+const imagesPath = [
+  "https://images.vexels.com/media/users/3/131484/isolated/preview/a432fa4062ed3d68771db7c1d65ee885-minus-inside-circle-icon-by-vexels.png",
+  "https://cdn3.iconfinder.com/data/icons/glypho-generic-icons/64/plus-big-512.png",
+  "https://cdn1.iconfinder.com/data/icons/main-ui-elements-with-colour-bg/512/male_avatar-128.png",
+  "https://cdn1.iconfinder.com/data/icons/main-ui-elements-with-colour-bg/512/home-128.png"
+];
+const size = imagesPath.length;
+io.on("connection", (socket) => {
+  const { id } = socket.client;
+  console.log(`User Connected: ${id}`);
+  socket.on("chat message", ({ nickname, msg }) => {
+    io.emit("chat message", { nickname, msg });
   });
-  socketRouter.createRoom(socket,socketRouter.event.createRoom);
-  socketRouter.hello(socket,socketRouter.event.hello);
-  socketRouter.disconnect(socket,socketRouter.event.disconnect);
-  socketRouter.searchUser(socket,socketRouter.event.searchUser);
-  socketRouter.roomListSearch(socket,socketRouter.event.roomListSearch);
-  socketRouter.InviteUser(socket,io,socketRouter.event.InviteUser);
-  socketRouter.leaveRoom(socket,socketRouter.event.leaveRoom);
-  socketRouter.searchFriend(socket,socketRouter.event.searchFriend);
-  socketRouter.requestFriendShipUser(socket,socketRouter.event.requestFriendShipUser);
-  socketRouter.acceptFriendShipRequest(socket,socketRouter.event.acceptFriendShipRequest);
-  socketRouter.denyFriendShipRequest(socket,socketRouter.event.denyFriendShipRequest);
-  socketRouter.removeFriendShipRequest(socket,socketRouter.event.removeFriendShipRequest);
-  socketRouter.messageSend(io,socket,socketRouter.event.messageSend);
-  socketRouter.messageLoad(socket,socketRouter.event.messageLoad);
-  socketRouter.searchFriendRequest(socket,socketRouter.event.searchFriendRequest);
-  socketRouter.joinRoomRequest(socket,socketRouter.event.joinRoomRequest);
-
-});
-// error handler
-app.use(function (err, req, res) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render("error");
+  socket.on("image Change", ({ index, urlInfo }) => {
+    console.log("index : ", index, "client.id : ", id);
+    if (index >= size - 1) {
+      index = 0;
+      urlInfo = imagesPath[index];
+      console.log("index 초과 index 재설정");
+    } else {
+      urlInfo = imagesPath[++index];
+    }
+    io.emit("image Change", { index, urlInfo });
+  });
+  // fs.readFile(__dirname + "/image.jpg", function (err, buf) {
+  //   // it"s possible to embed binary data
+  //   // within arbitrarily-complex objects
+  //   socket.emit("image", { image: true, buffer: buf.toString("base64") });
+  //   console.log("image file is initialized");
+  // });
 });
 
-module.exports = app;
+const PORT = process.env.PORT || 3002;
+server.listen(PORT, () => console.log(`Listen on *: ${PORT}`));
