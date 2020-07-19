@@ -27,6 +27,26 @@ io.on("connection", (socket) => {
     }
     io.emit("image Change", { index, urlInfo });
   });
+  socket.on("image Prev", ({ index, urlInfo }) => {
+    console.log("index : ", index, "client.id : ", id);
+    if (index == 0) {
+      index = size - 1;
+    } else {
+      index -= 1;
+    }
+    urlInfo = imagesPath[index];
+    io.emit("image Change", { index, urlInfo });
+  });
+  socket.on("image Next", ({ index, urlInfo }) => {
+    console.log("index : ", index, "client.id : ", id);
+    if (index >= size - 1) {
+      index = 0;
+    } else {
+      index += 1;
+    }
+    urlInfo = imagesPath[index];
+    io.emit("image Change", { index, urlInfo });
+  });
   // fs.readFile(__dirname + "/image.jpg", function (err, buf) {
   //   // it"s possible to embed binary data
   //   // within arbitrarily-complex objects

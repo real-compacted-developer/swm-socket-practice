@@ -35,9 +35,19 @@ class App extends Component {
     socket.emit("chat message", { nickname, msg, image });
     this.setState({ msg: "" });
   };
+
+  onPrevImage = () => {
+    const { index, urlInfo } = this.state;
+    socket.emit("image Prev", { index, urlInfo });
+  };
+
+  onNextImage = () => {
+    const { index, urlInfo } = this.state;
+    socket.emit("image Next", { index, urlInfo });
+  };
+
   renderImage() {
     let { urlInfo } = this.state;
-    console.log(urlInfo);
     return (
       <div>
         <img
@@ -80,6 +90,10 @@ class App extends Component {
         </button>
         <div>
           {this.renderImage()}
+        </div>
+        <div>
+          <button onClick={this.onPrevImage}> 이전 슬라이드 </button>
+          <button onClick={this.onNextImage}> 다음 슬라이드 </button>
         </div>
         <div>{this.renderChat()}</div>
       </div>
