@@ -9,15 +9,15 @@ const imagesPath = [
   "https://cdn1.iconfinder.com/data/icons/main-ui-elements-with-colour-bg/512/male_avatar-128.png",
   "https://cdn1.iconfinder.com/data/icons/main-ui-elements-with-colour-bg/512/home-128.png"
 ];
+let idx = 0;
+let url = imagesPath[0];
 const size = imagesPath.length;
 io.on("connection", (socket) => {
-  const { id } = socket.client;
-  console.log(`User Connected: ${id}`);
+  io.emit("initialize", ({ idx, url }));
   socket.on("chat message", ({ nickname, msg }) => {
     io.emit("chat message", { nickname, msg });
   });
   socket.on("image Change", ({ index, urlInfo }) => {
-    console.log("index : ", index, "client.id : ", id);
     if (index >= size - 1) {
       index = 0;
       urlInfo = imagesPath[index];
@@ -28,23 +28,25 @@ io.on("connection", (socket) => {
     io.emit("image Change", { index, urlInfo });
   });
   socket.on("image Prev", ({ index, urlInfo }) => {
-    console.log("index : ", index, "client.id : ", id);
     if (index == 0) {
       index = size - 1;
     } else {
       index -= 1;
     }
     urlInfo = imagesPath[index];
+    idx = index;
+    url = urlInfo;
     io.emit("image Change", { index, urlInfo });
   });
   socket.on("image Next", ({ index, urlInfo }) => {
-    console.log("index : ", index, "client.id : ", id);
     if (index >= size - 1) {
       index = 0;
     } else {
       index += 1;
     }
     urlInfo = imagesPath[index];
+    idx = index;
+    url = urlInfo;
     io.emit("image Change", { index, urlInfo });
   });
   // fs.readFile(__dirname + "/image.jpg", function (err, buf) {
