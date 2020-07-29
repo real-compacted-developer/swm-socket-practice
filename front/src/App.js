@@ -4,9 +4,9 @@ import io from "socket.io-client";
 const socket = io.connect("http://localhost:3002");
 var image = require('./image.png');
 class App extends Component {
-  constructor() {
-    super();
-    this.state = { msg: "", chat: [], nickname: "", image: "", index: 0, urlInfo: "https://images.vexels.com/media/users/3/131484/isolated/preview/a432fa4062ed3d68771db7c1d65ee885-minus-inside-circle-icon-by-vexels.png" };
+  constructor(props) {
+    super(props);
+    this.state = { msg: "", chat: [], nickname: "", image: "", index: 0, urlInfo: "" };
     socket.on("image Change", ({ index, urlInfo }) => {
       this.setState({
         index: index,
@@ -24,6 +24,13 @@ class App extends Component {
         chat: [...this.state.chat, { nickname, msg }]
       });
     });
+    socket.on("initialize", ({ idx, url }) => {
+      console.log("initialize : ", idx, url);
+      this.setState({
+        index: idx,
+        urlInfo: url
+      });
+    });
     // socket.on("image Change", ({ index, urlInfo }) => {
     //   this.setState({
     //     index: index,
@@ -31,6 +38,7 @@ class App extends Component {
     //   });
     // });
   }
+
   onTextChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
