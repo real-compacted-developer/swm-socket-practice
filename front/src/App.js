@@ -7,17 +7,17 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { msg: "", chat: [], nickname: "", image: "", index: 0, urlInfo: "" };
-    socket.on("image Change", ({ index, urlInfo }) => {
+    socket.on("image Change", ({ idx, url }) => {
       this.setState({
-        index: index,
-        urlInfo: urlInfo
+        index: idx,
+        urlInfo: url
       });
     });
   }
-  toggleImage = () => {
-    const { index, urlInfo } = this.state;
-    socket.emit("image Change", { index, urlInfo });
-  }
+  // toggleImage = () => {
+  //   const { index, urlInfo } = this.state;
+  //   socket.emit("image Change", { index, urlInfo });
+  // }
   componentDidMount() {
     socket.on("chat message", ({ nickname, msg }) => {
       this.setState({
@@ -51,13 +51,25 @@ class App extends Component {
   };
 
   onPrevImage = () => {
-    const { index, urlInfo } = this.state;
+    let { index, urlInfo } = this.state;
     socket.emit("image Prev", { index, urlInfo });
+    socket.on("image Change", ({ idx, url }) => {
+      this.setState({
+        index: idx,
+        urlInfo: url
+      });
+    });
   };
 
   onNextImage = () => {
     const { index, urlInfo } = this.state;
     socket.emit("image Next", { index, urlInfo });
+    socket.on("image Change", ({ idx, url }) => {
+      this.setState({
+        index: idx,
+        urlInfo: url
+      });
+    });
   };
 
   renderImage() {
