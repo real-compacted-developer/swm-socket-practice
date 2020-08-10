@@ -4,27 +4,41 @@ import io from "socket.io-client";
 const socket = io.connect("http://localhost:3002");
 var image = require('./image.png');
 class App extends Component {
-  constructor() {
-    super();
-    this.state = { msg: "", chat: [], nickname: "", image: "", index: 0, urlInfo: "https://images.vexels.com/media/users/3/131484/isolated/preview/a432fa4062ed3d68771db7c1d65ee885-minus-inside-circle-icon-by-vexels.png" };
+  constructor(props) {
+    super(props);
+    this.state = { msg: "", chat: [], nickname: "", image: "", index: 0, urlInfo: "" };
+    socket.on("image Change", ({ idx, url }) => {
+      this.setState({
+        index: idx,
+        urlInfo: url
+      });
+    });
   }
-  toggleImage = () => {
-    const { index, urlInfo } = this.state;
-    socket.emit("image Change", { index, urlInfo });
-  }
+  // toggleImage = () => {
+  //   const { index, urlInfo } = this.state;
+  //   socket.emit("image Change", { index, urlInfo });
+  // }
   componentDidMount() {
     socket.on("chat message", ({ nickname, msg }) => {
       this.setState({
         chat: [...this.state.chat, { nickname, msg }]
       });
     });
-    socket.on("image Change", ({ index, urlInfo }) => {
+    socket.on("initialize", ({ idx, url }) => {
+      console.log("initialize : ", idx, url);
       this.setState({
-        index: index,
-        urlInfo: urlInfo
+        index: idx,
+        urlInfo: url
       });
     });
+    // socket.on("image Change", ({ index, urlInfo }) => {
+    //   this.setState({
+    //     index: index,
+    //     urlInfo: urlInfo
+    //   });
+    // });
   }
+
   onTextChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -37,13 +51,25 @@ class App extends Component {
   };
 
   onPrevImage = () => {
-    const { index, urlInfo } = this.state;
+    let { index, urlInfo } = this.state;
     socket.emit("image Prev", { index, urlInfo });
+    socket.on("image Change", ({ idx, url }) => {
+      this.setState({
+        index: idx,
+        urlInfo: url
+      });
+    });
   };
 
   onNextImage = () => {
     const { index, urlInfo } = this.state;
     socket.emit("image Next", { index, urlInfo });
+    socket.on("image Change", ({ idx, url }) => {
+      this.setState({
+        index: idx,
+        urlInfo: url
+      });
+    });
   };
 
   renderImage() {

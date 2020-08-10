@@ -4,6 +4,7 @@ Socket Practice with react &amp; express
 
 ## Back
 
+- port : 3002 포트 사용
 - socket.io 모듈을 사용하여 Socket 통신(이미지)을 구현하였다.
 
 ### Image
@@ -32,6 +33,7 @@ Socket Practice with react &amp; express
 
 ## Front
 
+- port : 3000 포트 사용
 - socket.io-client 모듈을 사용하여 Socket 통신(이미지)을 구현하였다.
 
 ### Socket
