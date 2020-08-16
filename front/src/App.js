@@ -7,10 +7,10 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { msg: "", chat: [], nickname: "", image: "", index: 0, urlInfo: "" };
-    socket.on("image Change", ({ idx, url }) => {
+    socket.on("imageChange", (data) => {
       this.setState({
-        index: idx,
-        urlInfo: url
+        index: data.index,
+        urlInfo: data.urlInfo
       });
     });
   }
@@ -46,29 +46,33 @@ class App extends Component {
   onMessageSubmit = () => {
     const { nickname, msg } = this.state;
     this.setState({ image: "image.png" })
-    socket.emit("chat message", { nickname, msg, image });
+    socket.emit("chatMessage", { nickname, msg, image });
     this.setState({ msg: "" });
   };
 
   onPrevImage = () => {
     let { index, urlInfo } = this.state;
-    socket.emit("image Prev", { index, urlInfo });
-    socket.on("image Change", ({ idx, url }) => {
+    const data = { "index": index, "urlInfo": urlInfo };
+    socket.emit("imagePrev", data);
+
+    socket.on("imageChange", data => {
       this.setState({
-        index: idx,
-        urlInfo: url
+        index: data.index,
+        urlInfo: data.urlInfo,
       });
     });
   };
 
   onNextImage = () => {
     const { index, urlInfo } = this.state;
-    socket.emit("image Next", { index, urlInfo });
-    socket.on("image Change", ({ idx, url }) => {
+    const data = { "index": index, "urlInfo": urlInfo };
+    socket.emit("imageNext", data);
+    socket.on("imageChange", data => {
       this.setState({
-        index: idx,
-        urlInfo: url
+        index: data.index,
+        urlInfo: data.urlInfo,
       });
+      console.log(data);
     });
   };
 
